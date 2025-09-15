@@ -7,14 +7,13 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
-@EqualsAndHashCode(callSuper = true)
 @Entity
 @Table(name = "neighborhoods")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class  Neighborhood extends Auditable implements Identifiable<Long> {
+public class  Neighborhood implements Identifiable<Long> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -34,7 +33,7 @@ public class  Neighborhood extends Auditable implements Identifiable<Long> {
     @NotNull(message = "Is a required field")
     private String streetName;
 
-    @Column(name = "postal code", nullable = true)
+    @Column(name = "postal_code", nullable = true)
     private String postalCode;
 
 }

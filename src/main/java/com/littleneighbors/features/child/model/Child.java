@@ -1,8 +1,8 @@
 package com.littleneighbors.features.child.model;
-
 import com.littleneighbors.features.family.model.Family;
 import com.littleneighbors.features.interest.model.Interest;
 import com.littleneighbors.shared.Identifiable;
+import com.littleneighbors.shared.converter.GenderConverter;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -16,7 +16,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Period;
 import java.util.List;
-import java.util.Set;
+
 
 
 @Entity
@@ -27,12 +27,12 @@ import java.util.Set;
 @AllArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
 public class Child implements Identifiable<Long> {
-    public Long getId;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 1)
+    @Convert(converter = GenderConverter.class)
     private Gender gender;
 
     @Column(nullable = false)
@@ -44,7 +44,7 @@ public class Child implements Identifiable<Long> {
 
     @ManyToMany
     @JoinTable(name = "child_interests",
-     joinColumns = @JoinColumn(name = "child_id"), inverseJoinColumns = @JoinColumn(name = "interest_id"))
+            joinColumns = @JoinColumn(name = "child_id"), inverseJoinColumns = @JoinColumn(name = "interest_id"))
     private List<Interest> interests;
 
     @Column(name = "user_id", nullable = false)
@@ -63,4 +63,10 @@ public class Child implements Identifiable<Long> {
         return Period.between(this.birthDate, LocalDate.now()).getYears();
 
     }
+
+    @Override
+    public Long getId() {
+        return id;
+    }
 }
+
