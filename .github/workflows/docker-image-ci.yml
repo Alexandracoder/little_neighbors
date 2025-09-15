@@ -1,8 +1,8 @@
-name: CI - Build & Push Docker (Dev)
+name: CI - Build & Push Docker (feature/ci-tests)
 
 on:
   push:
-    branches: [ dev ]
+    branches: [ future/ci-tests]
   workflow_dispatch:
 
 jobs:

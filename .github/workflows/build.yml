@@ -31,4 +31,4 @@ jobs:
             ${{ runner.os }}-maven-
 
       - name: Run tests with H2
-        run: mvn clean verify -Ptest-h2 -B --no-transfer-progress
+        run: mvn clean verify -Ptest -Dspring.profiles.active=test -B --no-transfer-progress
