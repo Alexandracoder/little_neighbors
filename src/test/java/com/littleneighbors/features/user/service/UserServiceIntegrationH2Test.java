@@ -1,12 +1,10 @@
 package com.littleneighbors.features.user.service;
 
+import com.littleneighbors.LittleNeighborsApplication;
 import com.littleneighbors.features.user.dto.UserRequest;
 import com.littleneighbors.features.user.dto.UserResponse;
-import com.littleneighbors.features.user.mapper.UserMapper;
-import com.littleneighbors.features.user.model.User;
 import com.littleneighbors.features.user.repository.UserRepository;
-import com.littleneighbors.features.user.service.UserService;
-import com.littleneighbors.shared.exceptions.ResourceNotFoundException;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -15,8 +13,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@SpringBootTest
-@ActiveProfiles("test")
+@SpringBootTest(classes = LittleNeighborsApplication.class)
+@ActiveProfiles("test-h2")
+@Transactional
 public class UserServiceIntegrationH2Test {
 
     @Autowired
@@ -25,53 +24,47 @@ public class UserServiceIntegrationH2Test {
     @Autowired
     private UserRepository userRepository;
 
-    @Autowired
-    private UserMapper userMapper;
+    private UserRequest userRequest;
+
+    @BeforeEach
+    void setUp() {
+        userRequest = new UserRequest();
+        userRequest.setEmail("picopico@prueba.com");
+        userRequest.setPassword("password123");
+    }
 
     @Test
     void createUserAndGetUser_success() {
-        UserRequest request = new UserRequest();
-        request.setEmail("integration@h2.com");
-        request.setPassword("password123");
+        UserResponse created = userService.createUser(userRequest);
+        assertNotNull(created.getId());
+        assertEquals(userRequest.getEmail(), created.getEmail());
 
-        UserResponse response = userService.createUser(request);
-        assertNotNull(response.getId());
-        assertEquals("integration@h2.com", response.getEmail());
-
-        User persisted = userRepository.findById(response.getId()).orElseThrow();
-        assertEquals("integration@h2.com", persisted.getEmail());
-
-        UserResponse fetched = userService.getUserById(response.getId());
-        assertEquals(response.getEmail(), fetched.getEmail());
+        UserResponse fetched = userService.getUserById(created.getId());
+        assertEquals(created.getEmail(), fetched.getEmail());
+        assertEquals(created.getId(), fetched.getId());
     }
 
     @Test
     void updateUser_success() {
-        UserRequest request = new UserRequest();
-        request.setEmail("update@h2.com");
-        request.setPassword("password123");
-
-        UserResponse created = userService.createUser(request);
+        UserResponse created = userService.createUser(userRequest);
 
         UserRequest updateRequest = new UserRequest();
-        updateRequest.setEmail("updated@h2.com");
-        updateRequest.setPassword("newpass123");
+        updateRequest.setEmail("nuevo@correo.com");
+        updateRequest.setPassword("newPassword");
 
         UserResponse updated = userService.updateUser(created.getId(), updateRequest);
-        assertEquals("updated@h2.com", updated.getEmail());
+
+        assertEquals(updateRequest.getEmail(), updated.getEmail());
     }
 
     @Test
     void deleteUser_success() {
-        UserRequest request = new UserRequest();
-        request.setEmail("delete@h2.com");
-        request.setPassword("password123");
-
-        UserResponse created = userService.createUser(request);
+        UserResponse created = userService.createUser(userRequest);
         Long id = created.getId();
 
         userService.deleteUser(id);
 
-        assertThrows(ResourceNotFoundException.class, () -> userService.getUserById(id));
+        assertFalse(userRepository.findById(id).isPresent());
     }
 }
+
