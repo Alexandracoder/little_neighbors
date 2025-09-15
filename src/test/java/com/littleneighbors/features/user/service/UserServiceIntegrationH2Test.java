@@ -16,8 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
-@ActiveProfiles("test-h2") // Perfil para H2
-@Transactional
+@ActiveProfiles("test")
 public class UserServiceIntegrationH2Test {
 
     @Autowired
