@@ -2,9 +2,9 @@ name: Test - Unit & Integration
 
 on:
   push:
-    branches: [ dev ]
+    branches: [ feature/ci-tests ]
   pull_request:
-    branches: [ dev ]
+    branches: [ feature/ci-tests ]
   workflow_dispatch:
 
 jobs:
@@ -31,5 +31,4 @@ jobs:
             ${{ runner.os }}-maven-
 
       - name: Run tests with H2
-        run: mvn clean verify -Ptest -B --no-transfer-progress
-
+        run: mvn clean verify -Ptest-h2 -B --no-transfer-progress
